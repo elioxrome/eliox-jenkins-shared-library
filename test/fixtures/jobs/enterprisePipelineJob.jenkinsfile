@@ -1,0 +1,7 @@
+@Library('eliox-jenkins-shared-library') _
+
+enterprisePipeline(
+  appName: 'demo-service',
+  deploy: true,
+  environment: 'staging'
+)

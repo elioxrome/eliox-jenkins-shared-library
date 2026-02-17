@@ -1,0 +1,56 @@
+plugins {
+  id 'groovy'
+  id 'codenarc'
+}
+
+group = 'com.acme.jenkins'
+version = '0.1.0'
+
+tasks.withType(Wrapper).all {
+  gradleVersion = '8.10.2'
+  distributionType = Wrapper.DistributionType.BIN
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  implementation localGroovy()
+
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation('com.lesfurets:jenkins-pipeline-unit:1.1') {
+    exclude group: 'org.codehaus.groovy'
+  }
+}
+
+sourceSets {
+  main {
+    groovy {
+      srcDirs = ['src', 'vars']
+    }
+    resources {
+      srcDirs = ['resources']
+    }
+  }
+  test {
+    groovy {
+      srcDirs = ['test']
+    }
+    resources {
+      srcDirs = ['test/resources', 'test/fixtures']
+    }
+  }
+}
+
+codenarc {
+  toolVersion = '3.4.0'
+  configFile = file('.codenarc.groovy')
+  maxPriority1Violations = 0
+  maxPriority2Violations = 0
+  maxPriority3Violations = 9999
+}
+
+tasks.withType(Test).all {
+  useJUnit()
+}

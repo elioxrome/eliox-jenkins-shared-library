@@ -1,0 +1,26 @@
+enterprisePipeline()
+enterprisePipeline(Map config)
+
+Standardized pipeline with stages:
+- Checkout
+- Build
+- Test
+- Security Scan
+- Deploy (optional)
+
+Supported configuration:
+- appName (String, required)
+- agentLabel (String, default: linux)
+- checkoutFromScm (boolean, default: true)
+- repoUrl (String, optional for inline jobs without scm context)
+- repoBranch (String, default: main)
+- buildCommand (String, default: echo build)
+- testCommand (String, default: echo test)
+- securityCommand (String, default: echo dependencyCheckAnalyze)
+- deploy (boolean, default: false)
+- deployCommand (String, default: echo deployment)
+- environment (String, default: dev)
+
+No-args mode (legacy-safe):
+- Uses values from `params.APP_NAME`, `params.DEPLOY`, `params.ENV`, `params.AGENT_LABEL`,
+  `params.CHECKOUT_FROM_SCM`, `params.REPO_URL`, `params.REPO_BRANCH`.
