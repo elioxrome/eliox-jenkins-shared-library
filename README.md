@@ -24,13 +24,33 @@ An **enterprise-grade** template for a reusable, versionable, and testable Jenki
 ## Jenkinsfile Usage
 
 ```groovy
-@Library('acme-shared-lib@main') _
+@Library('eliox-jenkins-shared-library@main') _
 
-enterprisePipeline(
-  appName: 'payments-api',
-  deploy: true,
-  environment: 'staging'
-)
+pipeline {
+  agent any
+
+  parameters {
+    string(name: 'APP_NAME', defaultValue: 'payments-api', description: 'Name of application')
+    booleanParam(name: 'DEPLOY', defaultValue: false, description: 'Exec deploy')
+    choice(name: 'ENV', choices: ['dev', 'staging', 'prod'], description: 'Environment')
+  }
+
+  stages {
+    stage('Run shared library') {
+      steps {
+        script {
+          enterprisePipeline([
+            appName: params.APP_NAME,
+            deploy: params.DEPLOY,
+            environment: params.ENV,
+            agentLabel: 'built-in'
+          ])
+        }
+      }
+    }
+  }
+}
+
 ```
 
 In Jenkins environments with limited CPS compatibility, use the no-args invocation and job parameters:
