@@ -33,11 +33,7 @@ class PipelineConfigFactory implements Serializable {
     String deployImageTag = (safeRaw.deployImageTag ?: 'latest').toString().trim()
     String defaultBuildCommand = "docker build -t ${appName}:${deployImageTag} ."
     String defaultTestCommand = '''\
-    docker run --rm \
-      -v "$WORKSPACE:/app" \
-      -w /app \
-      ghcr.io/astral-sh/uv:0.8.15 \
-      run pytest
+    docker run --rm '${appName}:${deployImageTag}' uv run pytest 
     '''.stripIndent().trim()
     String defaultDeployCommand = """\
     rm -rf .deploy-config
