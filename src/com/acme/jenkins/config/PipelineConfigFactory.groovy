@@ -48,10 +48,10 @@ class PipelineConfigFactory implements Serializable {
       (safeRaw.repoBranch ?: 'main').toString(),
       (safeRaw.buildCommand ?: defaultBuildCommand).toString(),
       (safeRaw.testCommand ?: defaultTestCommand).toString(),
-      (safeRaw.securityCommand ?: '''\
+      (safeRaw.securityCommand ?: """\
       docker run --rm \
-        aquasec/trivy:latest image --severity HIGH,CRITICAL --ignore-unfixed $appName:$tag
-      ''').stripIndent().trim().toString(),
+        aquasec/trivy:latest image --severity HIGH,CRITICAL --ignore-unfixed ${appName}:${tag}
+      """).stripIndent().trim().toString(),
       toBooleanValue(safeRaw.deploy),
       (safeRaw.deployCommand ?: defaultDeployCommand).toString(),
       (safeRaw.kubeconfigCredentialsId ?: 'kubeconfig-bootstrap-kind').toString().trim(),
