@@ -25,4 +25,14 @@ class StepExecutor implements Serializable {
   void echo(String message) {
     script.echo(message)
   }
+
+  void withFileCredential(String credentialsId, String variable, Closure body) {
+    script.withCredentials([[
+      $class: 'FileBinding',
+      credentialsId: credentialsId,
+      variable: variable
+    ]]) {
+      body.call()
+    }
+  }
 }

@@ -43,7 +43,13 @@ pipeline {
             appName: params.APP_NAME,
             deploy: params.DEPLOY,
             environment: params.ENV,
-            agentLabel: 'built-in'
+            agentLabel: 'built-in',
+            kubeconfigCredentialsId: 'kubeconfig-bootstrap-kind',
+            deployRepoUrl: 'https://github.com/elioxrome/eliox-platform-config',
+            helmChartPath: 'charts/payments-api',
+            deployNamespace: 'apps',
+            kindClusterName: 'local-cluster',
+            deployImageTag: 'latest'
           ])
         }
       }

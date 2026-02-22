@@ -57,6 +57,12 @@ class StandardStages implements Serializable {
 
   void deploy() {
     steps.echo("Deploying ${config.appName} to ${config.environment}")
+    if (config.kubeconfigCredentialsId) {
+      steps.withFileCredential(config.kubeconfigCredentialsId, 'KUBECONFIG') {
+        steps.shell(config.deployCommand)
+      }
+      return
+    }
     steps.shell(config.deployCommand)
   }
 

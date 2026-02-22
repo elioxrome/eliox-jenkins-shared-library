@@ -17,6 +17,7 @@ class PipelineConfig implements Serializable {
   final String securityCommand
   final boolean deploy
   final String deployCommand
+  final String kubeconfigCredentialsId
   final String environment
 
   /**
@@ -32,6 +33,7 @@ class PipelineConfig implements Serializable {
    * @param securityCommand command for the Security Scan stage
    * @param deploy whether the Deploy stage should run
    * @param deployCommand command for the Deploy stage
+   * @param kubeconfigCredentialsId Jenkins credentialsId of kubeconfig secret file
    * @param environment target deployment environment
    */
   PipelineConfig(
@@ -45,6 +47,7 @@ class PipelineConfig implements Serializable {
     String securityCommand,
     boolean deploy,
     String deployCommand,
+    String kubeconfigCredentialsId,
     String environment
   ) {
     this.appName = appName
@@ -57,6 +60,7 @@ class PipelineConfig implements Serializable {
     this.securityCommand = securityCommand
     this.deploy = deploy
     this.deployCommand = deployCommand
+    this.kubeconfigCredentialsId = kubeconfigCredentialsId
     this.environment = environment
   }
 }

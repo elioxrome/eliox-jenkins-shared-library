@@ -4,7 +4,8 @@ import com.acme.jenkins.pipeline.EnterprisePipelineRunner
  * Global step entrypoint for the enterprise pipeline.
  *
  * This no-args variant is intended for Jenkins jobs that define parameters
- * (`APP_NAME`, `DEPLOY`, `ENV`, etc.). It builds a configuration map from
+ * (`APP_NAME`, `DEPLOY`, `ENV`, `DEPLOY_IMAGE_TAG`, etc.). It builds a
+ * configuration map from
  * `params` and delegates execution to {@link #call(Map)}.
  *
  * Business logic is intentionally kept in `src/` classes to keep this DSL
@@ -19,6 +20,7 @@ def call() {
   cfg.put('checkoutFromScm', params?.CHECKOUT_FROM_SCM == null ? true : toBooleanValue(params?.CHECKOUT_FROM_SCM))
   cfg.put('repoUrl', params?.REPO_URL ?: '')
   cfg.put('repoBranch', params?.REPO_BRANCH ?: 'main')
+  cfg.put('deployImageTag', params?.DEPLOY_IMAGE_TAG ?: (params?.IMAGE_TAG ?: 'latest'))
   call(cfg)
 }
 
@@ -33,6 +35,14 @@ def call() {
  * - `checkoutFromScm` (boolean-like, optional)
  * - `repoUrl` (String, optional)
  * - `repoBranch` (String, optional)
+ * - `deployRepoUrl` (String, optional)
+ * - `deployRepoBranch` (String, optional)
+ * - `helmChartPath` (String, optional)
+ * - `deployNamespace` (String, optional)
+ * - `kindClusterName` (String, optional)
+ * - `deployImageTag` (String, optional)
+ * - `kubeconfigCredentialsId` (String, optional)
+ * - `deployCommand` (String, optional)
  *
  * @param rawConfig configuration provided by Jenkinsfile or composed by {@link #call()}
  */

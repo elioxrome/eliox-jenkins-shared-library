@@ -14,13 +14,21 @@ Supported configuration:
 - checkoutFromScm (boolean, default: true)
 - repoUrl (String, optional for inline jobs without scm context)
 - repoBranch (String, default: main)
-- buildCommand (String, default: echo build)
-- testCommand (String, default: echo test)
-- securityCommand (String, default: echo dependencyCheckAnalyze)
+- buildCommand (String, default: docker build -t $appName:$deployImageTag .)
+- testCommand (String, default: uv run pytest)
+- securityCommand (String, default: docker run --rm aquasec/trivy:latest image --severity HIGH,CRITICAL --ignore-unfixed $appName:$tag)
 - deploy (boolean, default: false)
-- deployCommand (String, default: echo deployment)
+- deployRepoUrl (String, default: https://github.com/elioxrome/eliox-platform-config)
+- deployRepoBranch (String, default: main)
+- helmChartPath (String, default: charts/$appName)
+- deployNamespace (String, default: apps)
+- kindClusterName (String, default: local-cluster)
+- deployImageTag (String, default: latest)
+- deployCommand (String, default: kind load docker-image + git clone deployRepoUrl + helm upgrade --install)
+- kubeconfigCredentialsId (String, default: kubeconfig-bootstrap-kind)
 - environment (String, default: dev)
 
 No-args mode (legacy-safe):
 - Uses values from `params.APP_NAME`, `params.DEPLOY`, `params.ENV`, `params.AGENT_LABEL`,
-  `params.CHECKOUT_FROM_SCM`, `params.REPO_URL`, `params.REPO_BRANCH`.
+  `params.CHECKOUT_FROM_SCM`, `params.REPO_URL`, `params.REPO_BRANCH`,
+  `params.DEPLOY_IMAGE_TAG` (or `params.IMAGE_TAG`).

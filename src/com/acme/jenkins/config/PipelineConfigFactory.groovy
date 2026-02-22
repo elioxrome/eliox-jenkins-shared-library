@@ -24,6 +24,20 @@ class PipelineConfigFactory implements Serializable {
     if (!appName) {
       throw new IllegalArgumentException('appName is required')
     }
+    String environment = (safeRaw.environment ?: 'dev').toString()
+    String deployNamespace = (safeRaw.deployNamespace ?: 'apps').toString().trim()
+    String deployRepoUrl = (safeRaw.deployRepoUrl ?: 'https://github.com/elioxrome/eliox-platform-config').toString().trim()
+    String deployRepoBranch = (safeRaw.deployRepoBranch ?: 'main').toString().trim()
+    String helmChartPath = (safeRaw.helmChartPath ?: "charts/${appName}").toString().trim()
+    String kindClusterName = (safeRaw.kindClusterName ?: 'local-cluster').toString().trim()
+    String deployImageTag = (safeRaw.deployImageTag ?: 'latest').toString().trim()
+    String defaultBuildCommand = "docker build -t ${appName}:${deployImageTag} ."
+    String defaultDeployCommand = """\
+    rm -rf .deploy-config
+    kind load docker-image '${appName}:${deployImageTag}' --name '${kindClusterName}'
+    git clone --depth 1 --branch '${deployRepoBranch}' '${deployRepoUrl}' .deploy-config
+    helm upgrade --install '${appName}' '.deploy-config/${helmChartPath}' --namespace '${deployNamespace}'
+    """.stripIndent().trim()
 
     new PipelineConfig(
       appName,
@@ -31,12 +45,16 @@ class PipelineConfigFactory implements Serializable {
       safeRaw.checkoutFromScm == null ? true : toBooleanValue(safeRaw.checkoutFromScm),
       (safeRaw.repoUrl ?: '').toString().trim(),
       (safeRaw.repoBranch ?: 'main').toString(),
-      (safeRaw.buildCommand ?: 'echo build').toString(),
-      (safeRaw.testCommand ?: 'echo test').toString(),
-      (safeRaw.securityCommand ?: 'echo dependencyCheckAnalyze').toString(),
+      (safeRaw.buildCommand ?: defaultBuildCommand).toString(),
+      (safeRaw.testCommand ?: 'uv run pytest').toString(),
+      (safeRaw.securityCommand ?: '''\
+      docker run --rm \
+        aquasec/trivy:latest image --severity HIGH,CRITICAL --ignore-unfixed $appName:$tag
+      ''').stripIndent().trim().toString(),
       toBooleanValue(safeRaw.deploy),
-      (safeRaw.deployCommand ?: 'echo deployment').toString(),
-      (safeRaw.environment ?: 'dev').toString()
+      (safeRaw.deployCommand ?: defaultDeployCommand).toString(),
+      (safeRaw.kubeconfigCredentialsId ?: 'kubeconfig-bootstrap-kind').toString().trim(),
+      environment
     )
   }
 

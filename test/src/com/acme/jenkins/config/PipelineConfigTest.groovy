@@ -16,8 +16,13 @@ class PipelineConfigTest {
     assertEquals('linux', config.agentLabel)
     assertTrue(config.checkoutFromScm)
     assertEquals('main', config.repoBranch)
-    assertEquals('echo build', config.buildCommand)
-    assertEquals('echo test', config.testCommand)
+    assertEquals('docker build -t billing:latest .', config.buildCommand)
+    assertEquals('uv run pytest', config.testCommand)
+    assertTrue(config.deployCommand.contains("https://github.com/elioxrome/eliox-platform-config"))
+    assertTrue(config.deployCommand.contains("kind load docker-image 'billing:latest' --name 'local-cluster'"))
+    assertTrue(config.deployCommand.contains("helm upgrade --install 'billing' '.deploy-config/charts/billing'"))
+    assertTrue(config.deployCommand.contains("--namespace 'apps'"))
+    assertEquals('kubeconfig-bootstrap-kind', config.kubeconfigCredentialsId)
     assertFalse(config.deploy)
   }
 }

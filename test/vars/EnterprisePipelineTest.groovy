@@ -30,6 +30,7 @@ class EnterprisePipelineTest extends BasePipelineTest {
     helper.registerAllowedMethod('git', [Map], { Map args -> })
     helper.registerAllowedMethod('echo', [String], { String message -> })
     helper.registerAllowedMethod('sh', [String], { String command -> })
+    helper.registerAllowedMethod('withCredentials', [List, Closure], { List bindings, Closure c -> c.call() })
 
     script = loadScript('vars/enterprisePipeline.groovy')
   }
@@ -64,6 +65,18 @@ class EnterprisePipelineTest extends BasePipelineTest {
 
     assertTrue(helper.callStack.find { call ->
       call.methodName == 'git'
+    } != null)
+  }
+
+  @Test
+  void wrapsDeployWithKubeconfigCredentialsWhenDeployEnabled() {
+    script.call([
+      appName: 'sample-service',
+      deploy: true
+    ])
+
+    assertTrue(helper.callStack.find { call ->
+      call.methodName == 'withCredentials'
     } != null)
   }
 }
