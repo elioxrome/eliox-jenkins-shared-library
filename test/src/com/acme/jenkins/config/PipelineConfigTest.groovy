@@ -18,7 +18,7 @@ class PipelineConfigTest {
     assertEquals('main', config.repoBranch)
     assertEquals('docker build -t billing:latest .', config.buildCommand)
     assertTrue(config.testCommand.contains('ghcr.io/astral-sh/uv:0.8.15'))
-    assertTrue(config.testCommand.contains('uv run pytest'))
+    assertTrue(config.testCommand.contains('run pytest'))
     assertTrue(config.deployCommand.contains("https://github.com/elioxrome/eliox-platform-config"))
     assertTrue(config.deployCommand.contains("kind load docker-image 'billing:latest' --name 'local-cluster'"))
     assertTrue(config.deployCommand.contains("helm upgrade --install 'billing' '.deploy-config/charts/billing'"))

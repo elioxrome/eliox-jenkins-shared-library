@@ -37,7 +37,7 @@ class PipelineConfigFactory implements Serializable {
       -v "$WORKSPACE:/app" \
       -w /app \
       ghcr.io/astral-sh/uv:0.8.15 \
-      uv run pytest
+      run pytest
     '''.stripIndent().trim()
     String defaultDeployCommand = """\
     rm -rf .deploy-config
