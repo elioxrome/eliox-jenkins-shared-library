@@ -32,6 +32,13 @@ class PipelineConfigFactory implements Serializable {
     String kindClusterName = (safeRaw.kindClusterName ?: 'local-cluster').toString().trim()
     String deployImageTag = (safeRaw.deployImageTag ?: 'latest').toString().trim()
     String defaultBuildCommand = "docker build -t ${appName}:${deployImageTag} ."
+    String defaultTestCommand = '''\
+    docker run --rm \
+      -v "$WORKSPACE:/app" \
+      -w /app \
+      ghcr.io/astral-sh/uv:0.8.15 \
+      uv run pytest
+    '''.stripIndent().trim()
     String defaultDeployCommand = """\
     rm -rf .deploy-config
     kind load docker-image '${appName}:${deployImageTag}' --name '${kindClusterName}'
@@ -46,7 +53,7 @@ class PipelineConfigFactory implements Serializable {
       (safeRaw.repoUrl ?: '').toString().trim(),
       (safeRaw.repoBranch ?: 'main').toString(),
       (safeRaw.buildCommand ?: defaultBuildCommand).toString(),
-      (safeRaw.testCommand ?: 'uv run pytest').toString(),
+      (safeRaw.testCommand ?: defaultTestCommand).toString(),
       (safeRaw.securityCommand ?: '''\
       docker run --rm \
         aquasec/trivy:latest image --severity HIGH,CRITICAL --ignore-unfixed $appName:$tag

@@ -15,7 +15,7 @@ Supported configuration:
 - repoUrl (String, optional for inline jobs without scm context)
 - repoBranch (String, default: main)
 - buildCommand (String, default: docker build -t $appName:$deployImageTag .)
-- testCommand (String, default: uv run pytest)
+- testCommand (String, default: docker run --rm -v "$WORKSPACE:/app" -w /app ghcr.io/astral-sh/uv:0.8.15 uv run pytest)
 - securityCommand (String, default: docker run --rm aquasec/trivy:latest image --severity HIGH,CRITICAL --ignore-unfixed $appName:$tag)
 - deploy (boolean, default: false)
 - deployRepoUrl (String, default: https://github.com/elioxrome/eliox-platform-config)
