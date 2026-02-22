@@ -32,9 +32,7 @@ class PipelineConfigFactory implements Serializable {
     String kindClusterName = (safeRaw.kindClusterName ?: 'local-cluster').toString().trim()
     String deployImageTag = (safeRaw.deployImageTag ?: 'latest').toString().trim()
     String defaultBuildCommand = "docker build -t ${appName}:${deployImageTag} ."
-    String defaultTestCommand = '''\
-    docker run --rm '${appName}:${deployImageTag}' uv run pytest 
-    '''.stripIndent().trim()
+    String defaultTestCommand = 'docker run --rm '${appName}:${deployImageTag}' uv run pytest'
     String defaultDeployCommand = """\
     rm -rf .deploy-config
     kind load docker-image '${appName}:${deployImageTag}' --name '${kindClusterName}'
