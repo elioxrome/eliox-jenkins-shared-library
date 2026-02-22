@@ -33,7 +33,12 @@ class PipelineConfigFactory implements Serializable {
     String deployImageTag = (safeRaw.deployImageTag ?: 'latest').toString().trim()
     String defaultBuildCommand = "docker build -t ${appName}:${deployImageTag} ."
     String defaultTestCommand = "docker run --rm '${appName}:${deployImageTag}' uv run pytest"
-    String defaultSecurityCommand = "docker run --rm aquasec/trivy:latest image --severity HIGH,CRITICAL --ignore-unfixed ${appName}:${deployImageTag}"
+    String defaultSecurityCommand = """\
+    docker run --rm \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      -v \$HOME/.cache/trivy:/root/.cache/ \
+      aquasec/trivy:latest image --severity HIGH,CRITICAL --ignore-unfixed ${appName}:${deployImageTag}
+    """.stripIndent().trim()
     String defaultDeployCommand = """\
     rm -rf .deploy-config
     kind load docker-image '${appName}:${deployImageTag}' --name '${kindClusterName}'

@@ -16,7 +16,7 @@ Supported configuration:
 - repoBranch (String, default: main)
 - buildCommand (String, default: docker build -t $appName:$deployImageTag .)
 - testCommand (String, default: docker run --rm $appName:$deployImageTag uv run pytest)
-- securityCommand (String, default: docker run --rm aquasec/trivy:latest image --severity HIGH,CRITICAL --ignore-unfixed $appName:$deployImageTag)
+- securityCommand (String, default: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/.cache/trivy:/root/.cache/ aquasec/trivy:latest image --severity HIGH,CRITICAL --ignore-unfixed $appName:$deployImageTag)
 - deploy (boolean, default: false)
 - deployRepoUrl (String, default: https://github.com/elioxrome/eliox-platform-config)
 - deployRepoBranch (String, default: main)

@@ -18,6 +18,7 @@ class PipelineConfigTest {
     assertEquals('main', config.repoBranch)
     assertEquals('docker build -t billing:latest .', config.buildCommand)
     assertEquals("docker run --rm 'billing:latest' uv run pytest", config.testCommand)
+    assertTrue(config.securityCommand.contains('/var/run/docker.sock:/var/run/docker.sock'))
     assertTrue(config.securityCommand.contains('billing:latest'))
     assertTrue(config.deployCommand.contains("https://github.com/elioxrome/eliox-platform-config"))
     assertTrue(config.deployCommand.contains("kind load docker-image 'billing:latest' --name 'local-cluster'"))
