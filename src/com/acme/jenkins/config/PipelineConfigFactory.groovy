@@ -6,6 +6,9 @@ package com.acme.jenkins.config
  */
 class PipelineConfigFactory implements Serializable {
 
+  private static final String DEFAULT_BRANCH = 'main'
+  private static final String DEFAULT_DEPLOY_REPO_URL = 'https://github.com/elioxrome/eliox-platform-config'
+
   /**
    * Creates a normalized {@link PipelineConfig} applying defaults and
    * validating required values.
@@ -24,10 +27,10 @@ class PipelineConfigFactory implements Serializable {
     if (!appName) {
       throw new IllegalArgumentException('appName is required')
     }
-    String environment = (safeRaw.environment ?: 'dev').toString()
+    String environment = (safeRaw.environment ?: 'dev')
     String deployNamespace = (safeRaw.deployNamespace ?: 'apps').toString().trim()
-    String deployRepoUrl = (safeRaw.deployRepoUrl ?: 'https://github.com/elioxrome/eliox-platform-config').toString().trim()
-    String deployRepoBranch = (safeRaw.deployRepoBranch ?: 'main').toString().trim()
+    String deployRepoUrl = (safeRaw.deployRepoUrl ?: DEFAULT_DEPLOY_REPO_URL).toString().trim()
+    String deployRepoBranch = (safeRaw.deployRepoBranch ?: DEFAULT_BRANCH).toString().trim()
     String helmChartPath = (safeRaw.helmChartPath ?: "charts/${appName}").toString().trim()
     String kindClusterName = (safeRaw.kindClusterName ?: 'local-cluster').toString().trim()
     String deployImageTag = (safeRaw.deployImageTag ?: 'latest').toString().trim()
@@ -51,7 +54,7 @@ class PipelineConfigFactory implements Serializable {
       (safeRaw.agentLabel ?: 'linux').toString(),
       safeRaw.checkoutFromScm == null ? true : toBooleanValue(safeRaw.checkoutFromScm),
       (safeRaw.repoUrl ?: '').toString().trim(),
-      (safeRaw.repoBranch ?: 'main').toString(),
+      (safeRaw.repoBranch ?: DEFAULT_BRANCH).toString(),
       (safeRaw.buildCommand ?: defaultBuildCommand).toString(),
       (safeRaw.testCommand ?: defaultTestCommand).toString(),
       (safeRaw.securityCommand ?: defaultSecurityCommand).toString(),

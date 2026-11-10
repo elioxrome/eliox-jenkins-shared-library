@@ -1,5 +1,13 @@
 # Contributing
 
+## Setup (una vez por clon)
+
+```bash
+git config core.hooksPath .githooks
+```
+
+Esto activa el pre-commit hook (`.githooks/pre-commit`): corrige formato (EOL, tabs, trailing whitespace) en los `.groovy` staged y bloquea el commit si fallan CodeNarc o los tests.
+
 ## Workflow
 
 1. Create a branch from `main`.

@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+#
+# Pre-commit hook for eliox-jenkins-shared-library.
+# 1) Normalizes formatting on staged .groovy files (EOL, tabs->spaces, trailing
+#    whitespace, final newline) per .editorconfig and re-stages them.
+# 2) Runs CodeNarc (same gate as CI).
+# 3) Runs the test suite.
+# Any failure aborts the commit.
+#
+# Install once per clone:
+#   git config core.hooksPath .githooks
+
+set -euo pipefail
+
+root_dir="$(git rev-parse --show-toplevel)"
+cd "$root_dir"
+
+staged_groovy=$(git diff --cached --name-only --diff-filter=ACM -- '*.groovy' || true)
+
+if [ -n "$staged_groovy" ]; then
+  echo "==> Normalizando formato en archivos .groovy staged..."
+  changed=0
+  while IFS= read -r file; do
+    [ -f "$file" ] || continue
+    before_hash=$(git hash-object "$file")
+
+    sed -i 's/\r$//' "$file"            # CRLF -> LF
+    sed -i 's/\t/  /g' "$file"           # tabs -> 2 espacios (indent_size .editorconfig)
+    sed -i 's/[ \t]*$//' "$file"         # trailing whitespace
+    if [ -n "$(tail -c1 "$file")" ]; then
+      printf '\n' >> "$file"             # asegura newline final
+    fi
+
+    after_hash=$(git hash-object "$file")
+    if [ "$before_hash" != "$after_hash" ]; then
+      git add "$file"
+      changed=1
+    fi
+  done <<< "$staged_groovy"
+
+  if [ "$changed" = "1" ]; then
+    echo "==> Formato corregido automáticamente y re-añadido al commit."
+  fi
+fi
+
+echo "==> CodeNarc (codenarcMain, codenarcTest)..."
+./gradlew -q codenarcMain codenarcTest
+
+echo "==> Tests (./gradlew test)..."
+./gradlew -q test
+
+echo "==> Pre-commit OK."
